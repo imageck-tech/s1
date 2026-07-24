@@ -1,6 +1,16 @@
+import os
+
+from dotenv import load_dotenv
 from flask import Flask, render_template, request
+from supabase import create_client
+
+load_dotenv()
 
 app = Flask(__name__)
+
+supabase_url = os.environ.get("SUPABASE_URL")
+supabase_key = os.environ.get("SUPABASE_KEY")
+supabase = create_client(supabase_url, supabase_key) if supabase_url and supabase_key else None
 
 
 def calc_bmi(height_cm: float, weight_kg: float) -> float:
@@ -37,6 +47,16 @@ def index():
                 "height": height,
                 "weight": weight,
             }
+            if supabase:
+                try:
+                    supabase.table("bmi_records").insert({
+                        "height": height,
+                        "weight": weight,
+                        "bmi": result["bmi"],
+                        "category": result["category"],
+                    }).execute()
+                except Exception:
+                    pass
         except (ValueError, KeyError):
             error = "키와 몸무게는 0보다 큰 숫자로 입력해주세요."
 
