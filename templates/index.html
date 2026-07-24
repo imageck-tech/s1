@@ -55,6 +55,11 @@
     <h1>BMI 계산기</h1>
     <form method="post">
         <div>
+            <label for="name">이름</label>
+            <input type="text" id="name" name="name" required
+                   value="{{ result.name if result }}">
+        </div>
+        <div>
             <label for="height">키 (cm)</label>
             <input type="number" step="0.1" id="height" name="height" required
                    value="{{ result.height if result }}">
@@ -73,7 +78,7 @@
 
     {% if result %}
         <div class="result">
-            <div>BMI 지수</div>
+            <div>{{ result.name }}님의 BMI 지수</div>
             <div class="bmi-value">{{ result.bmi }}</div>
             <div>판정: {{ result.category }}</div>
         </div>

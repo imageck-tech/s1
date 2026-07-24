@@ -36,12 +36,14 @@ def index():
 
     if request.method == "POST":
         try:
+            name = request.form["name"].strip()
             height = float(request.form["height"])
             weight = float(request.form["weight"])
-            if height <= 0 or weight <= 0:
+            if not name or height <= 0 or weight <= 0:
                 raise ValueError
             bmi = calc_bmi(height, weight)
             result = {
+                "name": name,
                 "bmi": round(bmi, 2),
                 "category": bmi_category(bmi),
                 "height": height,
@@ -50,6 +52,7 @@ def index():
             if supabase:
                 try:
                     supabase.table("bmi_records").insert({
+                        "name": name,
                         "height": height,
                         "weight": weight,
                         "bmi": result["bmi"],
@@ -58,7 +61,7 @@ def index():
                 except Exception:
                     pass
         except (ValueError, KeyError):
-            error = "키와 몸무게는 0보다 큰 숫자로 입력해주세요."
+            error = "이름을 입력하고, 키와 몸무게는 0보다 큰 숫자로 입력해주세요."
 
     return render_template("index.html", result=result, error=error)
 
